@@ -137,7 +137,7 @@ export default function UserForm() {
         {/* Submit */}
         <button
           type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 py-2.5 text-white transition-transform hover:bg-gray-800 active:scale-[0.98]"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 py-2.5 text-white transition-transform hover:bg-green-600 active:scale-[0.98]"
         >
           <Send size={16} /> Submit
         </button>
