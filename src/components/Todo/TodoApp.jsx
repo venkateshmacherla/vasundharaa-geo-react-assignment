@@ -5,65 +5,84 @@ import FilterControls from './FilterControls';
 import { Plus } from 'lucide-react';
 
 export default function TodoApp() {
-  const [todos, setTodos] = useLocalStorage('todo_list', []);
-  const [inputValue, setInputValue] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [todoItems, setTodoItems] = useLocalStorage('todo_list', []);
+  const [taskInput, setTaskInput] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
 
-  const addTask = (e) => {
+  const handleAdd = (e) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
-    const newTask = {
-      id: Date.now(),
-      text: inputValue,
-      completed: false,
-    };
-    setTodos([...todos, newTask]);
-    setInputValue('');
+    if (!taskInput.trim()) return;
+
+    setTodoItems(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        text: taskInput,
+        completed: false,
+      },
+    ]);
+
+    setTaskInput('');
   };
 
-  const toggleComplete = (id) => {
-    setTodos(todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  const handleToggle = (taskId) => {
+    setTodoItems(items =>
+      items.map(item =>
+        item.id === taskId
+          ? { ...item, completed: !item.completed }
+          : item
+      )
+    );
   };
 
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(t => t.id !== id));
+  const handleDelete = (taskId) => {
+    setTodoItems(items => items.filter(item => item.id !== taskId));
   };
 
-  const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') return !todo.completed;
-    if (filter === 'completed') return todo.completed;
+  const visibleTodos = todoItems.filter(item => {
+    if (activeFilter === 'active') return !item.completed;
+    if (activeFilter === 'completed') return item.completed;
     return true;
   });
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">📝 Task 1: Enhanced Todo</h2>
+    <div className="p-6 rounded-xl border border-gray-200 shadow-sm bg-white/90 backdrop-blur flex flex-col h-small">
       
-      <form onSubmit={addTask} className="flex gap-2 mb-4">
+      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+        📝 Task 1: Todo Task Manager
+      </h2>
+
+      <form onSubmit={handleAdd} className="flex items-center gap-2 mb-4">
         <input
           type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          value={taskInput}
+          onChange={(e) => setTaskInput(e.target.value)}
           placeholder="Add a new task..."
-          className="flex-1 border border-gray-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+          className="flex-1 rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <button type="submit" className="bg-blue-600 text-white p-2.5 rounded-lg hover:bg-blue-700 transition-colors">
+        <button
+          type="submit"
+          className="rounded-lg bg-blue-600 p-2.5 text-white hover:bg-blue-700 transition-colors"
+        >
           <Plus size={20} />
         </button>
       </form>
 
-      <FilterControls filter={filter} setFilter={setFilter} />
+      <FilterControls filter={activeFilter} setFilter={setActiveFilter} />
 
-      <ul className="space-y-1 overflow-y-auto flex-1 max-h-[300px] pr-1 custom-scrollbar">
-        {filteredTodos.length === 0 && (
-          <p className="text-gray-400 text-center py-8 italic">No tasks found.</p>
+      <ul className="flex-1 overflow-y-auto space-y-1 pr-1 max-h-[300px] custom-scrollbar">
+        {visibleTodos.length === 0 && (
+          <p className="py-8 text-center text-gray-400 italic">
+            No tasks found.
+          </p>
         )}
-        {filteredTodos.map(todo => (
-          <TodoItem 
-            key={todo.id} 
-            todo={todo} 
-            toggleComplete={toggleComplete} 
-            deleteTodo={deleteTodo} 
+
+        {visibleTodos.map(task => (
+          <TodoItem
+            key={task.id}
+            todo={task}
+            toggleComplete={handleToggle}
+            deleteTodo={handleDelete}
           />
         ))}
       </ul>

@@ -1,64 +1,86 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 
-const NAMES = [
-  "React Developer", "Frontend Intern", "JavaScript Logic", 
-  "Tailwind CSS", "Web Optimization", "Software Engineer", "Creative Design",
-  "Component Modularity", "State Management", "User Experience"
+const ITEMS = [
+  'React Developer',
+  'Frontend Intern',
+  'JavaScript Logic',
+  'Tailwind CSS',
+  'Web Optimization',
+  'Software Engineer',
+  'Creative Design',
+  'Component Modularity',
+  'State Management',
+  'User Experience',
 ];
 
 export default function SearchList() {
-  const [query, setQuery] = useState('');
+  const [searchText, setSearchText] = useState('');
 
-  // Filtering
-  const filteredNames = NAMES.filter(name => 
-    name.toLowerCase().includes(query.toLowerCase())
+  // Filter items based on input
+  const results = ITEMS.filter(item =>
+    item.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Highlight Logic
-  const getHighlightedText = (text, highlight) => {
-    if (!highlight.trim()) return text;
-    
-    // Split text by the search query (captured in group)
-    const regex = new RegExp(`(${highlight})`, 'gi');
-    const parts = text.split(regex);
-    
+  // Highlight matched text
+  const renderHighlighted = (value, term) => {
+    if (!term.trim()) return value;
+
+    const matcher = new RegExp(`(${term})`, 'gi');
+    const segments = value.split(matcher);
+
     return (
       <span>
-        {parts.map((part, i) => (
-          part.toLowerCase() === highlight.toLowerCase() 
-            ? <span key={i} className="bg-yellow-200 text-gray-900 font-semibold rounded px-0.5">{part}</span> 
-            : part
-        ))}
+        {segments.map((seg, idx) =>
+          seg.toLowerCase() === term.toLowerCase() ? (
+            <span
+              key={idx}
+              className="rounded bg-yellow-200 px-0.5 font-semibold text-gray-900"
+            >
+              {seg}
+            </span>
+          ) : (
+            seg
+          )
+        )}
       </span>
     );
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">🔍 Task 5: Live Highlight</h2>
-      
+    <div className="flex h-full flex-col rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+      <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+        🔍 Task 5: Live Search & Highlight
+      </h2>
+
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+        <Search size={18} className="absolute left-3 top-3 text-gray-400" />
+
         <input
           type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
           placeholder="Type to search..."
-          className="w-full pl-10 p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className="w-full rounded-lg border border-gray-200 p-2.5 pl-10 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <div className="absolute right-3 top-3.5 text-xs text-gray-400 font-medium">
-          {filteredNames.length} Matches
-        </div>
+
+        <span className="absolute right-3 top-3.5 text-xs font-medium text-gray-400">
+          {results.length} Matches
+        </span>
       </div>
 
-      <div className="space-y-2 overflow-y-auto flex-1 max-h-[250px] pr-1 custom-scrollbar">
-        {filteredNames.length === 0 ? (
-          <p className="text-center text-gray-400 text-sm mt-8">No matching results.</p>
+      <div className="flex-1 space-y-2 overflow-y-auto pr-1 max-h-[250px] custom-scrollbar">
+        {results.length === 0 ? (
+          <p className="mt-8 text-center text-sm text-gray-400">
+            No matching results.
+          </p>
         ) : (
-          filteredNames.map((name, index) => (
-            <div key={index} className="p-3 border-b border-gray-50 last:border-0 hover:bg-blue-50 rounded-lg transition-colors">
-              {getHighlightedText(name, query)}
+          results.map((item, idx) => (
+            <div
+              key={idx}
+              className="rounded-lg border-b border-gray-50 p-3 transition-colors hover:bg-blue-50 last:border-0"
+            >
+              {renderHighlighted(item, searchText)}
             </div>
           ))
         )}

@@ -1,63 +1,75 @@
 import React, { useState } from 'react';
 
 export default function MultiProgressBar() {
-  const [values, setValues] = useState([
+  const [progressItems, setProgressItems] = useState([
     { label: 'HTML', val: 90 },
     { label: 'CSS', val: 60 },
     { label: 'JavaScript', val: 30 },
     { label: 'React', val: 45 },
   ]);
 
-  const handleSlide = (index, newVal) => {
-    const newValues = [...values];
-    newValues[index].val = parseInt(newVal, 10);
-    setValues(newValues);
+  const updateValue = (idx, value) => {
+    setProgressItems(list => {
+      const updated = [...list];
+      updated[idx] = { ...updated[idx], val: Number(value) };
+      return updated;
+    });
   };
 
-  // Calculate average of all sub-bars
-  const total = values.reduce((acc, curr) => acc + curr.val, 0);
-  const average = Math.round(total / values.length);
+  // Compute average score
+  const totalScore = progressItems.reduce((sum, item) => sum + item.val, 0);
+  const avgScore = Math.round(totalScore / progressItems.length);
 
-  // Dynamic Color Logic
-  const getColor = (v) => {
-    if (v < 40) return 'bg-red-500 shadow-red-200';
-    if (v < 70) return 'bg-yellow-500 shadow-yellow-200';
-    return 'bg-green-500 shadow-green-200';
+  // 🎨 Updated Color Logic (Modern UI)
+  const resolveColor = (score) => {
+    if (score < 40) return 'bg-blue-400 shadow-blue-200';
+    if (score < 70) return 'bg-indigo-500 shadow-indigo-200';
+    return 'bg-violet-600 shadow-violet-300';
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h2 className="text-xl font-bold mb-6">📊 Task 3: Dynamic Progress</h2>
-      
-      {/* Main Bar */}
-      <div className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-100">
-        <div className="flex justify-between mb-2">
-          <span className="text-sm font-semibold text-gray-700">Total Score</span>
-          <span className="text-sm font-bold text-gray-900">{average}%</span>
+    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+      <h2 className="mb-6 text-xl font-bold">
+        📊 Task 3: Skill Progress Overview
+      </h2>
+
+      {/* Overall Progress */}
+      <div className="mb-8 rounded-xl border border-gray-100 bg-gray-50 p-4">
+        <div className="mb-2 flex justify-between">
+          <span className="text-sm font-semibold text-gray-700">
+            Total Score
+          </span>
+          <span className="text-sm font-bold text-gray-900">
+            {avgScore}%
+          </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-5 overflow-hidden">
+
+        <div className="h-5 w-full overflow-hidden rounded-full bg-gray-200">
           <div
-            className={`h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px] ${getColor(average)}`}
-            style={{ width: `${average}%` }}
+            className={`h-full rounded-full shadow-[0_0_10px] transition-all duration-500 ease-out ${resolveColor(
+              avgScore
+            )}`}
+            style={{ width: `${avgScore}%` }}
           />
         </div>
       </div>
 
-      {/* Sub Inputs */}
+      {/* Individual Sliders */}
       <div className="space-y-5">
-        {values.map((item, index) => (
-          <div key={index}>
-            <div className="flex justify-between text-xs font-medium text-gray-500 mb-1.5">
-              <span>{item.label}</span>
-              <span>{item.val}%</span>
+        {progressItems.map((entry, idx) => (
+          <div key={idx}>
+            <div className="mb-1.5 flex justify-between text-xs font-medium text-gray-500">
+              <span>{entry.label}</span>
+              <span>{entry.val}%</span>
             </div>
+
             <input
               type="range"
               min="0"
               max="100"
-              value={item.val}
-              onChange={(e) => handleSlide(index, e.target.value)}
-              className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-blue-600 hover:accent-blue-700"
+              value={entry.val}
+              onChange={(e) => updateValue(idx, e.target.value)}
+              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-100 accent-indigo-600 hover:accent-indigo-700"
             />
           </div>
         ))}

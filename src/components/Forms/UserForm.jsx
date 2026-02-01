@@ -2,109 +2,152 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Send, CheckCircle2 } from 'lucide-react';
 
 export default function UserForm() {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-  const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [data, setData] = useState({ name: '', email: '', password: '' });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [visiblePassword, setVisiblePassword] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const validate = () => {
-    let tempErrors = {};
-    if (!formData.name.trim()) tempErrors.name = "Name is required";
-    // Regex for Email Validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) tempErrors.email = "Invalid email format";
-    if (formData.password.length < 6) tempErrors.password = "Password must be at least 6 characters";
-    
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
+  const runValidation = () => {
+    const issues = {};
+
+    if (!data.name.trim()) {
+      issues.name = 'Name is required';
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      issues.email = 'Invalid email format';
+    }
+
+    if (data.password.length < 6) {
+      issues.password = 'Password must be at least 6 characters';
+    }
+
+    setFieldErrors(issues);
+    return Object.keys(issues).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const submitForm = (e) => {
     e.preventDefault();
-    setSuccess(false);
-    if (validate()) {
-      setSuccess(true);
+    setIsSuccess(false);
+
+    if (runValidation()) {
+      setIsSuccess(true);
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear error for this field when user types
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: null });
+  const updateField = (e) => {
+    const { name, value } = e.target;
+
+    setData(prev => ({ ...prev, [name]: value }));
+
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: null }));
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">📋 Task 2: Validation</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Name Input */}
+    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+      <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+        📋 Task 2: User Registration & Validation
+      </h2>
+
+      <form onSubmit={submitForm} className="space-y-4">
+        {/* Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Full Name
+          </label>
           <input
             name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-              errors.name ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
-            }`}
+            value={data.name}
+            onChange={updateField}
             placeholder="Full Name"
+            className={`w-full rounded-lg border p-2.5 outline-none transition-all ${
+              fieldErrors.name
+                ? 'border-red-500 bg-red-50'
+                : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+            }`}
           />
-          {errors.name && <p className="text-red-500 text-xs mt-1 font-medium">{errors.name}</p>}
+          {fieldErrors.name && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {fieldErrors.name}
+            </p>
+          )}
         </div>
 
-        {/* Email Input */}
+        {/* Email */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Email Address
+          </label>
           <input
             name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-              errors.email ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
-            }`}
+            value={data.email}
+            onChange={updateField}
             placeholder="sample@example.com"
+            className={`w-full rounded-lg border p-2.5 outline-none transition-all ${
+              fieldErrors.email
+                ? 'border-red-500 bg-red-50'
+                : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+            }`}
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1 font-medium">{errors.email}</p>}
+          {fieldErrors.email && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
 
-        {/* Password Input */}
+        {/* Password */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Password
+          </label>
+
           <div className="relative">
             <input
-              type={showPassword ? "text" : "password"}
+              type={visiblePassword ? 'text' : 'password'}
               name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-                errors.password ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
-              }`}
+              value={data.password}
+              onChange={updateField}
               placeholder="••••••••"
+              className={`w-full rounded-lg border p-2.5 outline-none transition-all ${
+                fieldErrors.password
+                  ? 'border-red-500 bg-red-50'
+                  : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+              }`}
             />
+
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setVisiblePassword(prev => !prev)}
               className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {visiblePassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.password && <p className="text-red-500 text-xs mt-1 font-medium">{errors.password}</p>}
+
+          {fieldErrors.password && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {fieldErrors.password}
+            </p>
+          )}
         </div>
 
-        <button 
-          type="submit" 
-          className="w-full bg-gray-900 text-white py-2.5 rounded-lg hover:bg-gray-800 flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
+        {/* Submit */}
+        <button
+          type="submit"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 py-2.5 text-white transition-transform hover:bg-gray-800 active:scale-[0.98]"
         >
           <Send size={16} /> Submit
         </button>
-        
-        {success && (
-          <div className="flex items-center gap-2 text-green-700 bg-green-50 p-3 rounded-lg border border-green-200 animate-fade-in">
+
+        {isSuccess && (
+          <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 text-green-700 animate-fade-in">
             <CheckCircle2 size={18} />
-            <span className="text-sm font-medium">Form validated successfully!</span>
+            <span className="text-sm font-medium">
+              Form validated successfully!
+            </span>
           </div>
         )}
       </form>
