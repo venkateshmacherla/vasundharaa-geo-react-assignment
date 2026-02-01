@@ -6,6 +6,7 @@ export default function CountdownTimer() {
   const [running, setRunning] = useState(false);
   const [minutesInput, setMinutesInput] = useState(5);
   const [hydrated, setHydrated] = useState(false);
+  const [finished, setFinished] = useState(false); // ✅ NEW
 
   useEffect(() => {
     const savedEnd = localStorage.getItem('timer_end_time');
@@ -29,12 +30,13 @@ export default function CountdownTimer() {
     setHydrated(true);
   }, []);
 
+  // Preview sync (SAFE)
   useEffect(() => {
     if (!hydrated) return;
-    if (!running && secondsLeft === 0) {
+    if (!running && secondsLeft === 0 && !finished) {
       setSecondsLeft(minutesInput * 60);
     }
-  }, [minutesInput, running, hydrated]);
+  }, [minutesInput, running, hydrated, finished]);
 
   useEffect(() => {
     if (!running || secondsLeft <= 0) return;
@@ -65,6 +67,7 @@ export default function CountdownTimer() {
 
   // ===== ACTIONS =====
   const startTimer = () => {
+    setFinished(false); // reset message
     setRunning(true);
   };
 
@@ -77,6 +80,7 @@ export default function CountdownTimer() {
 
   const resetTimer = () => {
     setRunning(false);
+    setFinished(false);
     setSecondsLeft(minutesInput * 60);
     localStorage.removeItem('timer_end_time');
     localStorage.removeItem('timer_status');
@@ -85,6 +89,7 @@ export default function CountdownTimer() {
 
   const finishTimer = () => {
     setRunning(false);
+    setFinished(true); // ✅ SHOW MESSAGE
     setSecondsLeft(0);
     localStorage.removeItem('timer_end_time');
     localStorage.removeItem('timer_status');
@@ -100,12 +105,19 @@ export default function CountdownTimer() {
   return (
     <div className="bg-white mt-3 p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center">
       <h2 className="self-start mb-4 flex items-center gap-2 text-xl font-bold">
-        <Timer size={20} /> Persistent Timer
+        <Timer size={20} /> Task 4: Persistent Countdown Timer
       </h2>
 
-      <div className="mb-8 font-mono text-6xl font-bold text-gray-800">
+      <div className="mb-3 font-mono text-6xl font-bold text-gray-800">
         {displayTime(secondsLeft)}
       </div>
+
+      {/* ✅ MESSAGE BELOW TIMER */}
+      {finished && (
+        <div className="mb-4 text-red-600 font-semibold animate-pulse">
+          ⏰ Time’s up!
+        </div>
+      )}
 
       <div className="mb-6 flex gap-4">
         {!running ? (
@@ -153,6 +165,7 @@ export default function CountdownTimer() {
                 onClick={() => {
                   setMinutesInput(min);
                   setSecondsLeft(min * 60);
+                  setFinished(false);
                 }}
                 className="rounded-md border px-3 py-1 text-xs hover:bg-gray-100 transition"
               >
