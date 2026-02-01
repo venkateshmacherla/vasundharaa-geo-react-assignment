@@ -27,29 +27,29 @@ This project is a Single Page Application (SPA) built to demonstrate proficiency
 
 ## 📋 Features Implemented
 
-### **Task 1: Enhanced Todo App**
+### **Task 1: Todo Task Manager**
 * **State Management:** Add, delete, and toggle task completion.
 * **Persistence:** Tasks are saved to `LocalStorage`, so data remains after a refresh.
 * **Filtering:** Filter tasks by 'All', 'Active', or 'Completed'.
 
-### **Task 2: Form Handling & Validation**
+### **Task 2: User Registration & Validation**
 * **Regex Validation:** Validates email format and password length (min 6 chars).
 * **Error Handling:** Displays inline error messages for invalid fields.
 * **UX:** Includes a "Show/Hide Password" toggle.
 
-### **Task 3: Dynamic Multi-Input Progress Bar**
+### **Task 3: Skill Progress Overview**
 * **Logic:** The main progress bar dynamically calculates the average of all sub-inputs.
 * **Dynamic Styling:** The bar changes color based on the value:
     * < 40%: Red
     * 40% - 69%: Yellow
     * 70%+: Green
 
-### **Task 4: Advanced Countdown Timer**
+### **Task 4: Persistent Countdown Timer**
 * **Persistence:** The timer continues correctly even if the page is refreshed or closed.
 * **Logic:** Uses `Date.now()` timestamps stored in LocalStorage instead of relying solely on `setInterval` ticks.
 * **Controls:** Start, Pause, and Reset functionality.
 
-### **Task 5: Live Search with Highlighting**
+### **Task 5: Live Search & Highlight**
 * **Filtering:** Filters a list of names in real-time.
 * **Highlighting:** Uses Regex to split strings and wrap the matching search term in a highlighted `<span>` tag while preserving case.
 
